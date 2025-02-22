@@ -32,9 +32,9 @@ const TableData = ({ loading }) => {
       const workbook = XLSX.read(data, { type: "array", cellDates: true });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let responseData = XLSX.utils.sheet_to_json(sheet, { raw: false });
-      // responseData = responseData.filter(
-      //   (each) => each.StorageLocation !== "S079"
-      // );
+      responseData = responseData.filter(
+        (each) => each.StorageLocation !== "S079"
+      );
       const storeLocation = [
         ...new Set(responseData.map((item) => item.StorageLocationDescription)),
       ];
@@ -58,7 +58,7 @@ const TableData = ({ loading }) => {
               ).toFixed(2),
               totalCost: data.TotalCost ? data.TotalCost : 0,
               totalMRP: data.TotalMRP,
-              expiry: moment(new Date(data.ExpiryDate)).format("DD.MM.YYYY"),
+              expiry: moment(new Date(data.ExpiryDate)).format("YYYY-MM-DD"),
             },
           ];
           return savedList;
@@ -82,7 +82,7 @@ const TableData = ({ loading }) => {
               ).toFixed(2),
               totalCost: data.TotalCost ? data.TotalCost : 0,
               totalMRP: data.TotalMRP,
-              expiry: moment(new Date(data.ExpiryDate)).format("DD.MM.YYYY"),
+              expiry: moment(new Date(data.ExpiryDate)).format("YYYY-MM-DD"),
             },
           ];
           return savedList;
@@ -98,7 +98,8 @@ const TableData = ({ loading }) => {
     if (storeFilter === "all") {
       const data = dateFilter
         ? parseData.filter(
-            (each) => Date.parse(each.expiry) <= Date.parse(dateFilter)
+            (each) =>
+              moment(new Date(each.expiry)).format("YYYY-MM-DD") <= dateFilter
           )
         : parseData;
       setJsonData(data);
@@ -107,7 +108,8 @@ const TableData = ({ loading }) => {
     if (storeFilter !== "all") {
       const data = dateFilter
         ? parseData.filter(
-            (each) => Date.parse(each.expiry) <= Date.parse(dateFilter)
+            (each) =>
+              moment(new Date(each.expiry)).format("YYYY-MM-DD") <= dateFilter
           )
         : parseData;
       setJsonData(data.filter((each) => each.storeName === storeFilter));
@@ -116,8 +118,9 @@ const TableData = ({ loading }) => {
 
   useEffect(() => {
     setInventoryValue(
-      jsonData.reduce((acc, curr) => Number(acc) + Number(curr.totalCost), 0))
-  }, [jsonData])
+      jsonData.reduce((acc, curr) => Number(acc) + Number(curr.totalCost), 0)
+    );
+  }, [jsonData]);
 
   // Excel Data Download
   const DownloadExcel = () => {
@@ -125,7 +128,9 @@ const TableData = ({ loading }) => {
     const worksheet = XLSX.utils.json_to_sheet(jsonData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "data");
-    XLSX.writeFile(workbook, `${storeFilter} Stock.xlsx`, { compression: true });
+    XLSX.writeFile(workbook, `${storeFilter} Stock.xlsx`, {
+      compression: true,
+    });
     loading(false);
   };
 
@@ -164,8 +169,11 @@ const TableData = ({ loading }) => {
           </select>
         </div>
         <div>
-          <button id="download" onClick={DownloadExcel}
-          disabled={jsonData.length > 0 ? false : true}>
+          <button
+            id="download"
+            onClick={DownloadExcel}
+            disabled={jsonData.length > 0 ? false : true}
+          >
             Download Excel
           </button>
         </div>
@@ -201,7 +209,9 @@ const TableData = ({ loading }) => {
                   <td className="rightalign">{row.costPrice}</td>
                   <td className="rightalign">{row.MRP}</td>
                   <td className="rightalign">{row.totalCost}</td>
-                  <td className="centeralign">{row.expiry}</td>
+                  <td className="centeralign">
+                    {moment(new Date(row.expiry)).format("DD.MM.YYYY")}
+                  </td>
                 </tr>
               ))}
           </tbody>

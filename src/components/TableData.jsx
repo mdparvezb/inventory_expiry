@@ -3,35 +3,37 @@ import * as XLSX from "xlsx/xlsx.mjs";
 import "../App.css";
 import moment from "moment";
 
-const TableData = ( {loading} ) => {
+const TableData = ({ loading }) => {
   const [jsonData, setJsonData] = useState([]);
   const [parseData, setParseData] = useState([]);
   const [store, setStore] = useState(null);
   const [storeFilter, setStoreFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState(null);
 
-// Sort function
-const itemSortFn = (a, b) => {
-  if(a.itemName < b.itemName) {
-    return -1;
-  }else if (a.itemName > b.itemName) {
-    return 1;
-  }
-  return 0
-}
+  // Sort function
+  const itemSortFn = (a, b) => {
+    if (a.itemName < b.itemName) {
+      return -1;
+    } else if (a.itemName > b.itemName) {
+      return 1;
+    }
+    return 0;
+  };
 
   const xlHandler = (e) => {
-    setJsonData([])
-    setParseData([])
+    setJsonData([]);
+    setParseData([]);
     const file = e.target.files[0];
-    loading(true)
+    loading(true);
     const reader = new FileReader();
     reader.onload = (event) => {
       const data = new Uint8Array(event.target.result);
       const workbook = XLSX.read(data, { type: "array", cellDates: true });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let responseData = XLSX.utils.sheet_to_json(sheet, { raw: false });
-      responseData = responseData.filter((each) => each.StorageLocation !== 'S079')
+      responseData = responseData.filter(
+        (each) => each.StorageLocation !== "S079"
+      );
       const storeLocation = [
         ...new Set(responseData.map((item) => item.StorageLocationDescription)),
       ];
@@ -47,11 +49,15 @@ const itemSortFn = (a, b) => {
               itemName: data.MaterialDesc,
               batch: data.Batch,
               QTY: Number(data.Quantity),
-              costPrice: ((data.TotalCost ? data.TotalCost : 0) / Number(data.Quantity)).toFixed(2) ,
-              MRP: ((data.TotalMRP ? data.TotalMRP : 0) / Number(data.Quantity)).toFixed(2) ,
+              costPrice: (
+                (data.TotalCost ? data.TotalCost : 0) / Number(data.Quantity)
+              ).toFixed(2),
+              MRP: (
+                (data.TotalMRP ? data.TotalMRP : 0) / Number(data.Quantity)
+              ).toFixed(2),
               totalCost: data.TotalCost ? data.TotalCost : 0,
               totalMRP: data.TotalMRP,
-              expiry: moment(new Date(data.ExpiryDate)).format('DD.MM.YYYY') ,              
+              expiry: moment(new Date(data.ExpiryDate)).format("DD.MM.YYYY"),
             },
           ];
           return savedList;
@@ -67,26 +73,27 @@ const itemSortFn = (a, b) => {
               itemName: data.MaterialDesc,
               batch: data.Batch,
               QTY: Number(data.Quantity),
-              costPrice: ((data.TotalCost ? data.TotalCost : 0) / Number(data.Quantity)).toFixed(2) ,
-              MRP: ((data.TotalMRP ? data.TotalMRP : 0) / Number(data.Quantity)).toFixed(2) ,
+              costPrice: (
+                (data.TotalCost ? data.TotalCost : 0) / Number(data.Quantity)
+              ).toFixed(2),
+              MRP: (
+                (data.TotalMRP ? data.TotalMRP : 0) / Number(data.Quantity)
+              ).toFixed(2),
               totalCost: data.TotalCost ? data.TotalCost : 0,
               totalMRP: data.TotalMRP,
-              expiry: moment(new Date(data.ExpiryDate)).format('DD.MM.YYYY') , 
+              expiry: moment(new Date(data.ExpiryDate)).format("DD.MM.YYYY"),
             },
           ];
           return savedList;
         });
-
       });
-    loading(false)
-
+      loading(false);
     };
     reader.readAsArrayBuffer(file);
   };
 
   // Onchange function
   useEffect(() => {
-    
     if (storeFilter === "all") {
       const data = dateFilter
         ? parseData.filter(
@@ -97,32 +104,30 @@ const itemSortFn = (a, b) => {
     }
 
     if (storeFilter !== "all") {
-      const data = dateFilter ? parseData.filter(
-        (each) => Date.parse(each.expiry) <= Date.parse(dateFilter)
-      ) : parseData
+      const data = dateFilter
+        ? parseData.filter(
+            (each) => Date.parse(each.expiry) <= Date.parse(dateFilter)
+          )
+        : parseData;
       setJsonData(data.filter((each) => each.storeName === storeFilter));
     }
-
   }, [dateFilter, storeFilter]);
 
-
-// Excel Data Download
-const DownloadExcel = () => {
-  loading(true)
-  const worksheet = XLSX.utils.json_to_sheet(jsonData)
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "data");
-  XLSX.writeFile(workbook, "Stock.xlsx", { compression: true });
-  loading(false)
-}
-
-
+  // Excel Data Download
+  const DownloadExcel = () => {
+    loading(true);
+    const worksheet = XLSX.utils.json_to_sheet(jsonData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "data");
+    XLSX.writeFile(workbook, "Stock.xlsx", { compression: true });
+    loading(false);
+  };
 
   return (
     <>
       <div className="input-div">
         <h4>Upload SAP Stock:</h4>
-        <input accept='.xlsx' type="file" onChange={xlHandler} />
+        <input accept=".xlsx" type="file" onChange={xlHandler} />
       </div>
 
       <div className="filters">
@@ -147,7 +152,9 @@ const DownloadExcel = () => {
           </select>
         </div>
         <div>
-          <button id="download" onClick={DownloadExcel}>Download</button>
+          <button id="download" onClick={DownloadExcel}>
+            Download
+          </button>
         </div>
       </div>
 
@@ -169,31 +176,26 @@ const DownloadExcel = () => {
           </thead>
 
           <tbody>
-            {jsonData.length > 0 && jsonData.sort(itemSortFn).map((row, index) => (
+            {jsonData.length > 0 &&
+              jsonData.sort(itemSortFn).map((row, index) => (
                 <tr key={index + 1}>
-                  <td className="centeralign">{index+1}</td>
+                  <td className="centeralign">{index + 1}</td>
                   <td className="leftalign">{row.storeName}</td>
                   <td className="centeralign">{row.itemCode}</td>
                   <td className="leftalign">{row.itemName}</td>
                   <td className="centeralign">{row.batch}</td>
                   <td className="centeralign">{row.QTY}</td>
-                  <td className="rightalign">
-                    {row.costPrice}
-                  </td>
+                  <td className="rightalign">{row.costPrice}</td>
                   <td className="rightalign">{row.MRP}</td>
-                  <td className="rightalign">
-                    {row.totalCost}
-                  </td>
-                  <td className="centeralign">
-                    {row.expiry}
-                  </td>
+                  <td className="rightalign">{row.totalCost}</td>
+                  <td className="centeralign">{row.expiry}</td>
                 </tr>
-              ))} 
+              ))}
           </tbody>
         </table>
       </div>
     </>
   );
-}
+};
 
 export default TableData;

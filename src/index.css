@@ -1,0 +1,165 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+html {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+}
+
+.input-div {
+  width: 100%;
+  display: flex;
+  padding: 10px 10px 20px 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-div h4 {
+  padding: 5px;
+}
+  
+.table-div {
+  width: 100%;
+  height: 80vh;
+  overflow: scroll;
+  padding: 5px;
+
+}
+
+#download {
+  padding: 10px 20px;
+  background-color: orange;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#download:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+input, select {
+  cursor: pointer;
+
+}
+
+table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  width: 100%;
+  font-size: 14px;
+  background-color: blueviolet;
+  color: #fff;
+  height: 40px;
+}
+
+thead tr th:first-child {
+  border-top-left-radius: 8px;
+}
+
+thead tr th:last-child {
+  border-top-right-radius: 8px;
+  width: 100px;
+}
+
+th,
+td {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 5px 8px;
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.leftalign {
+  text-align: left;
+}
+
+.centeralign {
+  text-align: center;
+}
+
+.rightalign {
+  text-align: right;
+}
+
+
+/* Filters */
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 40px 20px 40px;
+  width: 100%;
+  height: 60px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filters input, .filters select {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: bisque;
+}
+
+.filters span {
+  padding: 5px;
+}
+
+
+/* Loader */
+.loading {
+  position: absolute;
+  top: 0 ;
+  width: 100%;
+  height: 100vh;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Loader */
+
+.round {
+  border: 5px solid bisque;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  border-top: 5px solid blue;
+  animation-name: round;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  
+}
+@keyframes round{ 
+0% {
+      transform: rotate(0deg);
+}
+100% {
+      transform: rotate(360deg);
+  }
+}

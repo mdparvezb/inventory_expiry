@@ -9,6 +9,7 @@ const TableData = ({ loading }) => {
   const [store, setStore] = useState(null);
   const [storeFilter, setStoreFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState(null);
+  const [inventoryValue, setInventoryValue] = useState(0);
 
   // Sort function
   const itemSortFn = (a, b) => {
@@ -31,15 +32,15 @@ const TableData = ({ loading }) => {
       const workbook = XLSX.read(data, { type: "array", cellDates: true });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let responseData = XLSX.utils.sheet_to_json(sheet, { raw: false });
-      responseData = responseData.filter(
-        (each) => each.StorageLocation !== "S079"
-      );
+      // responseData = responseData.filter(
+      //   (each) => each.StorageLocation !== "S079"
+      // );
       const storeLocation = [
         ...new Set(responseData.map((item) => item.StorageLocationDescription)),
       ];
       setStore(storeLocation);
       responseData.map((data) => {
-        // Copy of Data for filtering
+        // Main Data for Display
         setJsonData((prev) => {
           const savedList = [
             ...prev,
@@ -113,21 +114,32 @@ const TableData = ({ loading }) => {
     }
   }, [dateFilter, storeFilter]);
 
+  useEffect(() => {
+    setInventoryValue(
+      jsonData.reduce((acc, curr) => Number(acc) + Number(curr.totalCost), 0))
+  }, [jsonData])
+
   // Excel Data Download
   const DownloadExcel = () => {
     loading(true);
     const worksheet = XLSX.utils.json_to_sheet(jsonData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "data");
-    XLSX.writeFile(workbook, "Stock.xlsx", { compression: true });
+    XLSX.writeFile(workbook, `${storeFilter} Stock.xlsx`, { compression: true });
     loading(false);
   };
 
   return (
     <>
       <div className="input-div">
-        <h4>Upload SAP Stock:</h4>
-        <input accept=".xlsx" type="file" onChange={xlHandler} />
+        <div className="upload-box">
+          <h4>Upload SAP Stock:</h4>
+          <input accept=".xlsx" type="file" onChange={xlHandler} />
+        </div>
+        <div className="inventory-div">
+          <span className="inventory-name">Inventory Value:</span>
+          <span className="inventory-value">{Math.round(inventoryValue)}</span>
+        </div>
       </div>
 
       <div className="filters">
@@ -152,8 +164,9 @@ const TableData = ({ loading }) => {
           </select>
         </div>
         <div>
-          <button id="download" onClick={DownloadExcel}>
-            Download
+          <button id="download" onClick={DownloadExcel}
+          disabled={jsonData.length > 0 ? false : true}>
+            Download Excel
           </button>
         </div>
       </div>

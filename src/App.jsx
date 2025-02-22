@@ -4,6 +4,7 @@ import "./App.css";
 import TableData from "./components/TableData";
 import Loader from "./components/Loader";
 import { useState } from "react";
+import Footer from "./components/Footer";
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
     <>
     <TableData loading={setLoading} />
     {loading && <Loader />}
+    <Footer />
     </>
   );
 }

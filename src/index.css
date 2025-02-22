@@ -2,10 +2,11 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  font-family: roboto;
 }
 html {
   width: 100%;
-  height: 100vh;
+  max-height: 100vh;
   overflow: hidden;
 }
 
@@ -19,29 +20,64 @@ body {
   height: 100%;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #03002e;
+  color: rgba(255, 255, 255, 0.8);
+  height: 30px;
+}
+
+.heart {
+  color: red;
+  padding: 5px;
+}
+
 .input-div {
   width: 100%;
+  background-color: #03002e;
+  color: #fff;
   display: flex;
-  padding: 10px 10px 20px 10px;
+  padding: 15px 60px;
   align-items: center;
+  justify-content: space-between;
+}
+
+.upload-box {
+  display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .input-div h4 {
   padding: 5px;
 }
-  
+
+.inventory-div {
+  padding: 5px 10px;
+}
+
+.inventory-div .inventory-value {
+  font-size: 16px;
+  padding: 10px;
+  font-weight: bold;
+}
+
 .table-div {
   width: 100%;
-  height: 80vh;
-  overflow: scroll;
-  padding: 5px;
-
+  height: 75vh;
+  overflow: auto;
+  padding: 5px 5px 10px 5px;
 }
 
 #download {
   padding: 10px 20px;
-  background-color: orange;
+  background-color: green;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -52,9 +88,17 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-input, select {
-  cursor: pointer;
+input:hover,
+select:hover {
+  cursor: pointer !important;
+}
 
+option:hover {
+  cursor: pointer !important;
+}
+
+#file-input:hover {
+  cursor: pointer;
 }
 
 table {
@@ -102,35 +146,35 @@ tbody tr:nth-child(even) {
   text-align: right;
 }
 
-
 /* Filters */
 
 .filters {
   display: flex;
   justify-content: space-between;
+  background-color: #f6f8fa;
   align-items: center;
-  padding: 10px 40px 20px 40px;
+  padding: 20px 40px 20px 40px;
   width: 100%;
   height: 60px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
-.filters input, .filters select {
+.filters input,
+.filters select {
   padding: 5px 10px;
   border-radius: 5px;
   border: none;
-  background-color: bisque;
+  background-color: lightgray;
 }
 
 .filters span {
   padding: 5px;
 }
 
-
 /* Loader */
 .loading {
   position: absolute;
-  top: 0 ;
+  top: 0;
   width: 100%;
   height: 100vh;
   z-index: 99;
@@ -153,13 +197,12 @@ tbody tr:nth-child(even) {
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
-  
 }
-@keyframes round{ 
-0% {
-      transform: rotate(0deg);
-}
-100% {
-      transform: rotate(360deg);
+@keyframes round {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

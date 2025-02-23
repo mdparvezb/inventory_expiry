@@ -13,14 +13,14 @@ const TableData = ({ loading }) => {
 
   // Sort function
   const itemSortFn = (a, b) => {
-    if (a.itemName < b.itemName) {
+    if (a.ITEMNAME < b.ITEMNAME) {
       return -1;
-    } else if (a.itemName > b.itemName) {
+    } else if (a.ITEMNAME > b.ITEMNAME) {
       return 1;
     }
     return 0;
   };
-
+  // Excel Upload Handler
   const xlHandler = (e) => {
     setJsonData([]);
     setParseData([]);
@@ -45,20 +45,24 @@ const TableData = ({ loading }) => {
           const savedList = [
             ...prev,
             {
-              storeName: data.StorageLocationDescription,
-              itemCode: data.Material,
-              itemName: data.MaterialDesc,
-              batch: data.Batch,
+              STORENAME: data.StorageLocationDescription,
+              ITEMCODE: data.Material,
+              ITEMNAME: data.MaterialDesc,
+              BATCH: data.Batch,
               QTY: Number(data.Quantity),
-              costPrice: (
-                (data.TotalCost ? data.TotalCost : 0) / Number(data.Quantity)
+              COSTPRICE: (
+                (Number(data.TotalCost) ? Number(data.TotalCost) : 0) /
+                Number(data.Quantity)
               ).toFixed(2),
               MRP: (
-                (data.TotalMRP ? data.TotalMRP : 0) / Number(data.Quantity)
+                (Number(data.TotalMRP) ? Number(data.TotalMRP) : 0) /
+                Number(data.Quantity)
               ).toFixed(2),
-              totalCost: data.TotalCost ? data.TotalCost : 0,
-              totalMRP: data.TotalMRP,
-              expiry: moment(new Date(data.ExpiryDate)).format("YYYY-MM-DD"),
+              TOTALCOSTPRICE: Number(data.TotalCost)
+                ? Number(data.TotalCost)
+                : 0,
+              TOTALMRP: Number(data.TotalMRP),
+              EXPIRY: moment(new Date(data.ExpiryDate)).format("YYYY-MM-DD"),
             },
           ];
           return savedList;
@@ -69,20 +73,24 @@ const TableData = ({ loading }) => {
           const savedList = [
             ...prev,
             {
-              storeName: data.StorageLocationDescription,
-              itemCode: data.Material,
-              itemName: data.MaterialDesc,
-              batch: data.Batch,
+              STORENAME: data.StorageLocationDescription,
+              ITEMCODE: data.Material,
+              ITEMNAME: data.MaterialDesc,
+              BATCH: data.Batch,
               QTY: Number(data.Quantity),
-              costPrice: (
-                (data.TotalCost ? data.TotalCost : 0) / Number(data.Quantity)
+              COSTPRICE: (
+                (Number(data.TotalCost) ? Number(data.TotalCost) : 0) /
+                Number(data.Quantity)
               ).toFixed(2),
               MRP: (
-                (data.TotalMRP ? data.TotalMRP : 0) / Number(data.Quantity)
+                (Number(data.TotalMRP) ? Number(data.TotalMRP) : 0) /
+                Number(data.Quantity)
               ).toFixed(2),
-              totalCost: data.TotalCost ? data.TotalCost : 0,
-              totalMRP: data.TotalMRP,
-              expiry: moment(new Date(data.ExpiryDate)).format("YYYY-MM-DD"),
+              TOTALCOSTPRICE: Number(data.TotalCost)
+                ? Number(data.TotalCost)
+                : 0,
+              TOTALMRP: Number(data.TotalMRP),
+              EXPIRY: moment(new Date(data.ExpiryDate)).format("YYYY-MM-DD"),
             },
           ];
           return savedList;
@@ -99,7 +107,7 @@ const TableData = ({ loading }) => {
       const data = dateFilter
         ? parseData.filter(
             (each) =>
-              moment(new Date(each.expiry)).format("YYYY-MM-DD") <= dateFilter
+              moment(new Date(each.EXPIRY)).format("YYYY-MM-DD") <= dateFilter
           )
         : parseData;
       setJsonData(data);
@@ -109,16 +117,19 @@ const TableData = ({ loading }) => {
       const data = dateFilter
         ? parseData.filter(
             (each) =>
-              moment(new Date(each.expiry)).format("YYYY-MM-DD") <= dateFilter
+              moment(new Date(each.EXPIRY)).format("YYYY-MM-DD") <= dateFilter
           )
         : parseData;
-      setJsonData(data.filter((each) => each.storeName === storeFilter));
+      setJsonData(data.filter((each) => each.STORENAME === storeFilter));
     }
   }, [dateFilter, storeFilter]);
 
   useEffect(() => {
     setInventoryValue(
-      jsonData.reduce((acc, curr) => Number(acc) + Number(curr.totalCost), 0)
+      jsonData.reduce(
+        (acc, curr) => Number(acc) + Number(curr.TOTALCOSTPRICE),
+        0
+      )
     );
   }, [jsonData]);
 
@@ -127,7 +138,7 @@ const TableData = ({ loading }) => {
     loading(true);
     const worksheet = XLSX.utils.json_to_sheet(jsonData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "data");
+    XLSX.utils.book_append_sheet(workbook, worksheet, `${storeFilter}`);
     XLSX.writeFile(workbook, `${storeFilter} Stock.xlsx`, {
       compression: true,
     });
@@ -201,16 +212,16 @@ const TableData = ({ loading }) => {
               jsonData.sort(itemSortFn).map((row, index) => (
                 <tr key={index + 1}>
                   <td className="centeralign">{index + 1}</td>
-                  <td className="leftalign">{row.storeName}</td>
-                  <td className="centeralign">{row.itemCode}</td>
-                  <td className="leftalign">{row.itemName}</td>
-                  <td className="centeralign">{row.batch}</td>
+                  <td className="leftalign">{row.STORENAME}</td>
+                  <td className="centeralign">{row.ITEMCODE}</td>
+                  <td className="leftalign">{row.ITEMNAME}</td>
+                  <td className="centeralign">{row.BATCH}</td>
                   <td className="centeralign">{row.QTY}</td>
-                  <td className="rightalign">{row.costPrice}</td>
+                  <td className="rightalign">{row.COSTPRICE}</td>
                   <td className="rightalign">{row.MRP}</td>
-                  <td className="rightalign">{row.totalCost}</td>
+                  <td className="rightalign">{row.TOTALCOSTPRICE}</td>
                   <td className="centeralign">
-                    {moment(new Date(row.expiry)).format("DD.MM.YYYY")}
+                    {moment(new Date(row.EXPIRY)).format("DD-MM-YYYY")}
                   </td>
                 </tr>
               ))}
